@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  },
+  "name": "my-first-code",
+  "version": "1.0.0",
+  "description": "一个简单的 HTTP 服务器，能够： - 监听 3000 端口 - 根据 URL 路径返回不同内容（首页、关于、404） - 读取 HTML 文件返回给浏览器",
+  "main": "hello.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LingeXu/my-first-code.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LingeXu/my-first-code/issues"
+  },
+  "homepage": "https://github.com/LingeXu/my-first-code#readme"
+}
