@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>API 测试工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .result-area {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .result-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-loading {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🚀 API 测试工具</h1>
+            <p style="color: #666; margin-bottom: 20px;">
+                点击按钮，测试后端 API 接口
+            </p>
+            
+            <div class="button-group">
+                <button id="homeBtn">🏠 首页 API</button>
+                <button id="aboutBtn">📖 关于 API</button>
+                <button id="user1Btn">👤 用户 1</button>
+                <button id="user2Btn">👤 用户 2</button>
+                <button id="user3Btn">👤 用户 3</button>
+            </div>
+            
+            <div class="button-group">
+                <input type="number" id="userIdInput" placeholder="输入用户ID (1-3)" style="flex: 1;">
+                <button id="userCustomBtn">🔍 查询自定义 ID</button>
+            </div>
+            
+            <div class="result-area">
+                <div class="result-title">📦 API 返回结果：</div>
+                <div id="statusArea"></div>
+                <pre id="resultArea">等待点击按钮...</pre>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>💡 当前可用的 API</h2>
+            <ul style="margin-left: 20px; color: #666; line-height: 1.6;">
+                <li><code>GET /</code> - 返回欢迎信息</li>
+                <li><code>GET /about</code> - 返回关于信息</li>
+                <li><code>GET /user?id=1</code> - 返回用户1的信息（张三）</li>
+                <li><code>GET /user?id=2</code> - 返回用户2的信息（李四）</li>
+                <li><code>GET /user?id=3</code> - 返回用户3的信息（王五）</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 获取页面元素
+        const homeBtn = document.getElementById('homeBtn');
+        const aboutBtn = document.getElementById('aboutBtn');
+        const user1Btn = document.getElementById('user1Btn');
+        const user2Btn = document.getElementById('user2Btn');
+        const user3Btn = document.getElementById('user3Btn');
+        const userCustomBtn = document.getElementById('userCustomBtn');
+        const userIdInput = document.getElementById('userIdInput');
+        const resultArea = document.getElementById('resultArea');
+        const statusArea = document.getElementById('statusArea');
+        
+        // API 基础地址
+        const API_BASE = 'http://localhost:3000';
+        
+        // 显示加载状态
+        function showLoading() {
+            statusArea.innerHTML = '<div class="status status-loading">⏳ 正在请求 API...</div>';
+            resultArea.textContent = '加载中...';
+        }
+        
+        // 显示成功结果
+        function showSuccess(data, apiName) {
+            statusArea.innerHTML = `
+                <div class="status status-success">
+                    ✅ 成功调用 ${apiName}
+                </div>
+            `;
+            resultArea.textContent = JSON.stringify(data, null, 2);
+        }
+        
+        // 显示错误结果
+        function showError(error, apiName) {
+            statusArea.innerHTML = `
+                <div class="status status-error">
+                    ❌ 调用 ${apiName} 失败: ${error.message}
+                </div>
+            `;
+            resultArea.textContent = `错误: ${error.message}`;
+        }
+        
+        // 通用 API 调用函数
+        async function callAPI(endpoint, apiName) {
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                const data = await response.json();
+                showSuccess(data, apiName);
+            } catch (error) {
+                showError(error, apiName);
+            }
+        }
+        
+        // 绑定按钮点击事件
+        homeBtn.onclick = () => callAPI('/', '首页 API');
+        aboutBtn.onclick = () => callAPI('/about', '关于 API');
+        user1Btn.onclick = () => callAPI('/user?id=1', '用户1 API');
+        user2Btn.onclick = () => callAPI('/user?id=2', '用户2 API');
+        user3Btn.onclick = () => callAPI('/user?id=3', '用户3 API');
+        userCustomBtn.onclick = () => {
+            const id = userIdInput.value.trim();
+            if (id) {
+                callAPI(`/user?id=${id}`, `查询用户${id}`);
+            } else {
+                alert('请输入用户ID');
+            }
+        };
+        
+        console.log('前端页面已加载，等待用户点击按钮...');
+    </script>
+</body>
+</html>
